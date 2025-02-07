@@ -21,7 +21,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copiar o JAR construído da etapa anterior
-COPY --from=build /app/target/rotafood-api-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /app/target/gradehorarios-api-0.0.1-SNAPSHOT.jar app.jar
 
 # Expor a porta da aplicação
 EXPOSE 8080
