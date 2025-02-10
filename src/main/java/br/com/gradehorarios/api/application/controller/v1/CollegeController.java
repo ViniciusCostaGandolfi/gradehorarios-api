@@ -45,8 +45,8 @@ public class CollegeController {
 
 
     @GetMapping("/{collegeId}")
-    public CollegeDto getCollegeById(@PathVariable Integer collegeId) {
-        return new CollegeDto(collegeService.getById(collegeId));
+    public FullCollegeDto getCollegeById(@PathVariable Integer collegeId) {
+        return new FullCollegeDto(collegeService.getById(collegeId));
     }
 
     @PutMapping
