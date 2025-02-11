@@ -25,16 +25,19 @@ public record FullCollegeDto(
             college.getDisciplines() != null 
                 ? college.getDisciplines().stream()
                       .map(DisciplineDto::new)
+                      .sorted(Comparator.comparing(DisciplineDto::name))
                       .collect(Collectors.toList())
                 : null,
             college.getTeachers() != null 
                 ? college.getTeachers().stream()
                       .map(FullTeacherDto::new)
+                      .sorted(Comparator.comparing(FullTeacherDto::name))
                       .collect(Collectors.toList())
                 : null,
             college.getClassrooms() != null 
                 ? college.getClassrooms().stream()
                       .map(FullClassroomDto::new)
+                      .sorted(Comparator.comparing(FullClassroomDto::name))
                       .collect(Collectors.toList())
                 : null,
             college.getSolutions() != null 
