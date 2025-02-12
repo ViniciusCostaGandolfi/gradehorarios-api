@@ -6,7 +6,6 @@ import br.com.gradehorarios.api.domain.entity.college.Teacher;
 import br.com.gradehorarios.api.domain.entity.college.TeacherAvailability;
 import br.com.gradehorarios.api.domain.repository.CollegeRepository;
 import br.com.gradehorarios.api.domain.repository.TeacherAvailabilityRepository;
-import br.com.gradehorarios.api.domain.repository.TeacherDisciplineClassroomRepository;
 import br.com.gradehorarios.api.domain.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +23,6 @@ public class TeacherService {
 
     @Autowired
     private CollegeRepository collegeRepository;
-
-    @Autowired
-    private TeacherDisciplineClassroomRepository teacherDisciplineClassroomRepository;
 
 
 
@@ -86,12 +82,6 @@ public class TeacherService {
     public void deleteById(Integer id) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher não encontrado."));
-
-        teacherDisciplineClassroomRepository.deleteAllByTeacher(teacher);
-
-        if (teacher.getTeacherAvailability() != null) {
-            teacherAvailabilityRepository.delete(teacher.getTeacherAvailability());
-        }
 
         teacherRepository.delete(teacher);
     }

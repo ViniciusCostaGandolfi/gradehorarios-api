@@ -29,18 +29,18 @@ public class Classroom {
     private ClassroomDailySchedule classroomDailySchedule;
 
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TeacherDisciplineClassroom> teacherDisciplineClassrooms = new ArrayList<>();
+    private List<TeacherClassroomDiscipline> teacherDisciplineClassrooms = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "collegeId")
     private College college;
 
-    public void addTeacherDisciplineClassroom(TeacherDisciplineClassroom disciplineClassroom) {
+    public void addTeacherDisciplineClassroom(TeacherClassroomDiscipline disciplineClassroom) {
         disciplineClassroom.setClassroom(this);
         this.teacherDisciplineClassrooms.add(disciplineClassroom);
     }
 
-    public void removeTeacherDisciplineClassroom(TeacherDisciplineClassroom disciplineClassroom) {
+    public void removeTeacherDisciplineClassroom(TeacherClassroomDiscipline disciplineClassroom) {
         disciplineClassroom.setClassroom(null);
         this.teacherDisciplineClassrooms.remove(disciplineClassroom);
     }

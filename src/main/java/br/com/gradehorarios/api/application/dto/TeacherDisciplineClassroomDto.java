@@ -1,6 +1,6 @@
 package br.com.gradehorarios.api.application.dto;
 
-import br.com.gradehorarios.api.domain.entity.college.TeacherDisciplineClassroom;
+import br.com.gradehorarios.api.domain.entity.college.TeacherClassroomDiscipline;
 
 public record TeacherDisciplineClassroomDto(
     Integer id,
@@ -10,7 +10,7 @@ public record TeacherDisciplineClassroomDto(
     Integer totalClasses
 ) {
 
-    public TeacherDisciplineClassroomDto(TeacherDisciplineClassroom teacherDisciplineClassroom) {
+    public TeacherDisciplineClassroomDto(TeacherClassroomDiscipline teacherDisciplineClassroom) {
         this(
             teacherDisciplineClassroom.getId(),
             teacherDisciplineClassroom.getTeacher() != null ? teacherDisciplineClassroom.getTeacher().getId() : null,

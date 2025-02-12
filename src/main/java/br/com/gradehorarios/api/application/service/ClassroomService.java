@@ -7,12 +7,12 @@ import br.com.gradehorarios.api.domain.entity.college.ClassroomDailySchedule;
 import br.com.gradehorarios.api.domain.entity.college.College;
 import br.com.gradehorarios.api.domain.entity.college.Discipline;
 import br.com.gradehorarios.api.domain.entity.college.Teacher;
-import br.com.gradehorarios.api.domain.entity.college.TeacherDisciplineClassroom;
+import br.com.gradehorarios.api.domain.entity.college.TeacherClassroomDiscipline;
 import br.com.gradehorarios.api.domain.repository.ClassroomDailyScheduleRepository;
 import br.com.gradehorarios.api.domain.repository.ClassroomRepository;
 import br.com.gradehorarios.api.domain.repository.CollegeRepository;
 import br.com.gradehorarios.api.domain.repository.DisciplineRepository;
-import br.com.gradehorarios.api.domain.repository.TeacherDisciplineClassroomRepository;
+import br.com.gradehorarios.api.domain.repository.TeacherClassroomDisciplineRepository;
 import br.com.gradehorarios.api.domain.repository.TeacherRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class ClassroomService {
     private TeacherRepository teacherRepository;
 
     @Autowired
-    private TeacherDisciplineClassroomRepository teacherDisciplineClassroomRepository;
+    private TeacherClassroomDisciplineRepository teacherClassroomDisciplineRepository;
 
     @Autowired
     private DisciplineRepository disciplineRepository;
@@ -91,17 +91,17 @@ public class ClassroomService {
                     .filter(id -> id != null)
                     .collect(Collectors.toList());
 
-            List<TeacherDisciplineClassroom> classroomsToRemove = classroom.getTeacherDisciplineClassrooms().stream()
+            List<TeacherClassroomDiscipline> classroomsToRemove = classroom.getTeacherDisciplineClassrooms().stream()
                     .filter(disciplineClassroom -> !dtoDisciplineClassroomIds.contains(disciplineClassroom.getId()))
                     .collect(Collectors.toList());
 
             classroom.getTeacherDisciplineClassrooms().removeAll(classroomsToRemove);
 
-            List<TeacherDisciplineClassroom> newOrUpdatedClassrooms = classroomDto.teacherDisciplineClassrooms().stream()
+            List<TeacherClassroomDiscipline> newOrUpdatedClassrooms = classroomDto.teacherDisciplineClassrooms().stream()
                     .map(dto -> {
-                        TeacherDisciplineClassroom disciplineClassroom = dto.id() != null
-                                ? teacherDisciplineClassroomRepository.findById(dto.id()).orElse(new TeacherDisciplineClassroom())
-                                : new TeacherDisciplineClassroom();
+                        TeacherClassroomDiscipline disciplineClassroom = dto.id() != null
+                                ? teacherClassroomDisciplineRepository.findById(dto.id()).orElse(new TeacherClassroomDiscipline())
+                                : new TeacherClassroomDiscipline();
 
                         Discipline discipline = disciplineRepository.findById(dto.disciplineId())
                                 .orElseThrow(() -> new EntityNotFoundException("Disciplina não encontrada"));
