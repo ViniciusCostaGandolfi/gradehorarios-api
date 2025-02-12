@@ -8,7 +8,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiVersion.VERSION + "/colleges/{collegeId}/teachers")
@@ -24,7 +27,8 @@ public class TeacherController {
         ) {
         return teacherService.getAllByCollegeId(collegeId).stream()
                 .map(FullTeacherDto::new)
-                .toList();
+                .sorted(Comparator.comparing(FullTeacherDto::name))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{teacherId}")

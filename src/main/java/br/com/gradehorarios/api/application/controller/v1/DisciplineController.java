@@ -9,7 +9,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(ApiVersion.VERSION + "/colleges/{collegeId}/disciplines")
@@ -26,7 +29,8 @@ public class DisciplineController {
         return disciplineService.getAllByCollegeId(collegeId)
                                 .stream()
                                 .map(DisciplineDto::new)
-                                .toList();
+                                .sorted(Comparator.comparing(DisciplineDto::name))
+                                .collect(Collectors.toList());
     }
 
     @GetMapping("/{disciplineId}")

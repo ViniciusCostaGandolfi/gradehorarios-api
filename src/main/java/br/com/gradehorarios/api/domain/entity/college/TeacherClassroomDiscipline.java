@@ -1,6 +1,5 @@
 package br.com.gradehorarios.api.domain.entity.college;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,12 +30,11 @@ public class TeacherClassroomDiscipline {
     @JoinColumn(name = "teacherId", nullable = true)
     private Teacher teacher;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)    
+    @ManyToOne 
     @JoinColumn(name = "classroomId")
     private Classroom classroom;
 
-    
-    @ManyToOne(cascade = CascadeType.REMOVE)    
+    @ManyToOne
     @JoinColumn(name = "disciplineId")
     private Discipline discipline;
     
