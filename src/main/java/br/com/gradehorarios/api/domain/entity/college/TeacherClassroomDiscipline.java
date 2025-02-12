@@ -31,11 +31,11 @@ public class TeacherClassroomDiscipline {
     private Teacher teacher;
 
     @ManyToOne 
-    @JoinColumn(name = "classroomId")
+    @JoinColumn(name = "classroomId", nullable = false)
     private Classroom classroom;
 
     @ManyToOne
-    @JoinColumn(name = "disciplineId")
+    @JoinColumn(name = "disciplineId", nullable = false)
     private Discipline discipline;
     
     @Column
