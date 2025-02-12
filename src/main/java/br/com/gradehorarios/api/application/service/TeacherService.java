@@ -4,8 +4,10 @@ import br.com.gradehorarios.api.application.dto.FullTeacherDto;
 import br.com.gradehorarios.api.domain.entity.college.College;
 import br.com.gradehorarios.api.domain.entity.college.Teacher;
 import br.com.gradehorarios.api.domain.entity.college.TeacherAvailability;
+import br.com.gradehorarios.api.domain.entity.college.TeacherClassroomDiscipline;
 import br.com.gradehorarios.api.domain.repository.CollegeRepository;
 import br.com.gradehorarios.api.domain.repository.TeacherAvailabilityRepository;
+import br.com.gradehorarios.api.domain.repository.TeacherClassroomDisciplineRepository;
 import br.com.gradehorarios.api.domain.repository.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,8 @@ public class TeacherService {
     @Autowired
     private CollegeRepository collegeRepository;
 
-
+    @Autowired
+    private TeacherClassroomDisciplineRepository teacherClassroomDisciplineRepository;
 
     @Autowired
     private TeacherAvailabilityRepository teacherAvailabilityRepository;
@@ -78,11 +81,19 @@ public class TeacherService {
     }
 
 
-    @Transactional
-    public void deleteById(Integer id) {
+        @Transactional
+        public void deleteById(Integer id) {
         Teacher teacher = teacherRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher não encontrado."));
 
+        List<TeacherClassroomDiscipline> disciplines = teacherClassroomDisciplineRepository.findAllByTeacherId(id);
+
+        for (TeacherClassroomDiscipline discipline : disciplines) {
+                discipline.setTeacher(null);
+        }
+
         teacherRepository.delete(teacher);
-    }
+        }
+
+
 }

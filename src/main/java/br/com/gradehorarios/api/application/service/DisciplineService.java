@@ -5,6 +5,8 @@ import br.com.gradehorarios.api.domain.entity.college.College;
 import br.com.gradehorarios.api.domain.entity.college.Discipline;
 import br.com.gradehorarios.api.domain.repository.CollegeRepository;
 import br.com.gradehorarios.api.domain.repository.DisciplineRepository;
+import br.com.gradehorarios.api.domain.repository.TeacherClassroomDisciplineRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,9 @@ public class DisciplineService {
 
     @Autowired
     private DisciplineRepository disciplineRepository;
+
+    @Autowired
+    private TeacherClassroomDisciplineRepository teacherClassroomDisciplineRepository;
 
     @Autowired
     private CollegeRepository collegeRepository;
@@ -58,6 +63,9 @@ public class DisciplineService {
             .orElseThrow(() -> new EntityNotFoundException("Recurso não encontrado"));
         Discipline discipline = disciplineRepository.findByIdAndCollegeId(disciplineId, college.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Discipline não encontrada para o college especificado."));
+
+        this.teacherClassroomDisciplineRepository.deleteAllByDisciplineId(disciplineId);
+        
         disciplineRepository.delete(discipline);
     }
 }
