@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minio_user
+      MINIO_ROOT_PASSWORD: minio_password
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    restart: always
+
+volumes:
+  postgres_data:
+  minio_data:

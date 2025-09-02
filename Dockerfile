@@ -1,31 +1,13 @@
-# Etapa 1: Construção da aplicação
-FROM maven:3.9.4-eclipse-temurin-21 AS build
+FROM python:3.11
 
-# Definir o diretório de trabalho
 WORKDIR /app
 
-# Copiar o arquivo pom.xml e baixar as dependências
-COPY pom.xml .
-RUN mvn dependency:go-offline
+COPY requirements.txt .
 
-# Copiar o código-fonte
-COPY src ./src
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Construir a aplicação
-RUN mvn clean package -DskipTests
+COPY . .
 
-# Etapa 2: Criar a imagem final
-FROM eclipse-temurin:21-jre-alpine
+EXPOSE 8000
 
-# Definir o diretório de trabalho
-WORKDIR /app
-
-# Copiar o JAR construído da etapa anterior
-COPY --from=build /app/target/gradehorarios-api-0.0.1-SNAPSHOT.jar app.jar
-
-# Expor a porta da aplicação
-EXPOSE 8080
-
-# Comando para executar a aplicação
-ENTRYPOINT ["java", "-jar", "app.jar"]
-
+CMD [ "uvicorn", "api.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000" ]
