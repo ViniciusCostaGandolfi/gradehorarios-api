@@ -1,19 +1,14 @@
 # Backend RotaFoodAPI
 
-Olá, eu me chamo Vinícius e estou desenvolvendo a aplicação RotaFood. Esta 
-aplicação é basicamente um sistema para roterização para estabelecimentos de 
-entrega de comida com um sistema para gestão de pedidos, rotas, menu, etc acoplado.
-
-Roterizar suas entregas poupa o tempo para gerenciar seus entregadores, poupa 
-o tempo para relizar todas as suas entregas, fideliza seus clientes pois a 
-coomida chegará mais rapido e quente na cada deles. Mande os pedidos para a 
-cozinha por ROTA, logo, haverá menos tempo entre um pedido ficar pronto e sair 
-para entrega!
+Olá, eu me chamo Vinícius e estou desenvolvendo a aplicação Grade Horários. Esta 
+aplicação é basicamente um sistema para resolução do problema de grade de horários escolares, 
+pois uma escola tem os horários das aulas de cada classe, horarios disponíveis por professores e por matéria, 
+além das preferencias dos professores e as restrições de aulas duplas!.
 
 # Porque dividir em dois serviços?
 
-Pela natureza do problema resolvido, o [Capacited Vehicle Routine Problem](https://en.wikipedia.org/wiki/Vehicle_routing_problem) foi necessário dividir o backend em dois serviços, um que para o banco de dados, outro para a roterização em si. Por mais otmizado que eu, Saulo e Cristiano tenhamos deixado o nosso modelo, cerca de 100 pontos de entrega roterizados por segundo. Deixar tudo em grande monolito poderia acarretar concorrencia entre usuários que querem seus dados, para com usuários que querem a roterização.
-Em relação a microserviços, não tenho usuários ainda, logo Monolitics First!!! Microserviços apenas iriam atrasar o desenvlvimento deste aplicativo. No futuro se precisar irei dividir, atualmente vou apenas retirar a camada de Roterização poque ela é demorada. Teste o solucionador do [Google ORTools](https://developers.google.com/optimization/routing/cvrp) e veja o quão complexo é este problema.
+Pela natureza do problema resolvido, o [Problema de Grade de Horários Escolares]([https://en.wikipedia.org/wiki/Vehicle_routing_problem](https://en.wikipedia.org/wiki/School_timetable)) foi necessário dividir o backend em dois serviços, um que para o banco de dados, outro para a processar a grade de horários em si. Por mais otmizado que eu, Saulo e André tenhamos deixado o nosso modelo, ele processa por alguns segundos. Deixar tudo em grande monolito poderia acarretar concorrencia entre usuários que querem seus dados, e um micro serviço para a processar o modelo matemático.
+Em relação a microserviços, não tenho usuários ainda, logo Monolitics First!!! Microserviços apenas iriam atrasar o desenvlvimento deste aplicativo. No futuro se precisar irei dividir, atualmente vou apenas retirar a camada de Roterização poque ela é demorada. Veja o que é [pesquisa operacional](https://developers.google.com/optimization/mip/mip_example?hl=pt-br) para entender melhor o que eu faço!
 
 # Porque utilizar FastAPI x Django?
 
