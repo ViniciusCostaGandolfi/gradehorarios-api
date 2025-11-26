@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import br.com.gradehorarios.gradehorarios.bootstrap.dto.JwtUserDto;
+import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +45,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJwt != null) {
             try {
                 JwtUserDto userDto = tokenService.getUserFromToken(tokenJwt);
-                            var authority = new SimpleGrantedAuthority(userDto.globalRole().toString());
+                var authority = new SimpleGrantedAuthority(userDto.role().toString());
                 var authentication = new UsernamePasswordAuthenticationToken(
                         userDto,
                         null,

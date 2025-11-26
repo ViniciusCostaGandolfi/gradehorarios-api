@@ -17,9 +17,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference; 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.gradehorarios.gradehorarios.auth.domain.entity.User;
-import br.com.gradehorarios.gradehorarios.bootstrap.dto.JwtResponse;
-import br.com.gradehorarios.gradehorarios.bootstrap.dto.JwtUserDto;
+import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtResponse;
+import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
+import br.com.gradehorarios.gradehorarios.domain.entity.User;
 
 
 @Service

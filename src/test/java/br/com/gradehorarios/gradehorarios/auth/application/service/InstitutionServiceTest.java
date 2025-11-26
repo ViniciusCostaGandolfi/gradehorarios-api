@@ -1,11 +1,13 @@
 package br.com.gradehorarios.gradehorarios.auth.application.service;
 
 
-import br.com.gradehorarios.gradehorarios.auth.application.dto.CreateInstitutionRequest;
-import br.com.gradehorarios.gradehorarios.auth.application.dto.InstitutionResponseDTO;
-import br.com.gradehorarios.gradehorarios.auth.application.dto.UpdateInstitutionRequest;
-import br.com.gradehorarios.gradehorarios.auth.domain.entity.Institution;
-import br.com.gradehorarios.gradehorarios.auth.infra.repository.InstitutionRepository;
+import br.com.gradehorarios.gradehorarios.application.dto.CreateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.InstitutionResponseDto;
+import br.com.gradehorarios.gradehorarios.application.dto.UpdateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.service.InstitutionService;
+import br.com.gradehorarios.gradehorarios.domain.entity.Institution;
+import br.com.gradehorarios.gradehorarios.infra.repository.InstitutionRepository;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,7 @@ public class InstitutionServiceTest {
 
         when(repository.save(any(Institution.class))).thenReturn(institution);
 
-        InstitutionResponseDTO response = service.create(createRequest);
+        InstitutionResponseDto response = service.create(createRequest);
 
         assertNotNull(response);
         assertEquals("Escola Teste", response.name());
