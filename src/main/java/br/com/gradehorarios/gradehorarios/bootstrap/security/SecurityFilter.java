@@ -1,10 +1,9 @@
 package br.com.gradehorarios.gradehorarios.bootstrap.security;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,7 +17,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
-@Order(1)
 public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -45,11 +43,23 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJwt != null) {
             try {
                 JwtUserDto userDto = tokenService.getUserFromToken(tokenJwt);
-                var authority = new SimpleGrantedAuthority(userDto.role().toString());
+
+                var authorities = new ArrayList<SimpleGrantedAuthority>();
+                
+                authorities.add(new SimpleGrantedAuthority(userDto.role().toString()));
+                if (userDto.institutions() != null) {
+                    userDto.institutions().forEach(inst -> {
+                        String authName = String.format("INSTITUTION_%d_%s", 
+                            inst.institutionId(), 
+                            inst.role()
+                        );
+                        authorities.add(new SimpleGrantedAuthority(authName));
+                    });
+                }
                 var authentication = new UsernamePasswordAuthenticationToken(
                         userDto,
                         null,
-                        List.of(authority)
+                        authorities
                 );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

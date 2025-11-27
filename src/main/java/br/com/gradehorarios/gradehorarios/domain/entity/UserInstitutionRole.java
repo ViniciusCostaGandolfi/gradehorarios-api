@@ -1,5 +1,7 @@
 package br.com.gradehorarios.gradehorarios.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +11,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"user", "institution"})
 @EqualsAndHashCode(of = "id")
 public class UserInstitutionRole {
 
@@ -17,13 +18,14 @@ public class UserInstitutionRole {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuarioId")
+    @JoinColumn(name = "userId")
     private User user;
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "instituicaoId")
+    @JoinColumn(name = "institutionId")
     private Institution institution;
 
     @Enumerated(EnumType.STRING)

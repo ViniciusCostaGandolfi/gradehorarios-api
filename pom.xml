@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.7</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>br.com.gradehorarios</groupId>
 	<artifactId>gradehorarios</artifactId>
@@ -112,12 +112,12 @@
 		<dependency>
 			<groupId>tech.tablesaw</groupId>
 			<artifactId>tablesaw-core</artifactId>
-			<version>0.43.1</version>
+			<version>0.44.3</version>
 		</dependency>
 		<dependency>
 			<groupId>tech.tablesaw</groupId>
 			<artifactId>tablesaw-excel</artifactId>
-			<version>0.43.1</version>
+			<version>0.44.3</version>
 		</dependency>
 			<dependency>
 			<groupId>software.amazon.awssdk</groupId>

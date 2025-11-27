@@ -37,7 +37,7 @@ public class UserController {
         return ResponseEntity.ok(userService.register(data));
 
     }
-@GetMapping
+    @GetMapping
     public ResponseEntity<List<UserResponseDTO>> listAll(Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 

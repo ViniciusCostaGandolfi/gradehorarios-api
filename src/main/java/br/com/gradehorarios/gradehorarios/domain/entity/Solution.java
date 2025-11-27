@@ -4,6 +4,7 @@ import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,8 +35,10 @@ public class Solution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 1024)
     private String inputPath;
 
+    @Column(length = 1024)
     private String outputPath;
 
     private Long durationMillis;
@@ -43,8 +46,10 @@ public class Solution {
     @Enumerated(EnumType.STRING)
     private SolverStatus solverStatus;
 
+    @Column(columnDefinition = "TEXT")
     private String errorMessage;
 
+    @Column(columnDefinition = "TEXT")
     private String warningMessage;
 
     private String modelName;
@@ -57,7 +62,7 @@ public class Solution {
     @JoinColumn(name = "institutionId", nullable = false)
     private Institution institution;
 
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "userId", nullable = false)
-    // private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", nullable = false)
+    private User user;
 }

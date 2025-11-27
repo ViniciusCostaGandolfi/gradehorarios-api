@@ -3,6 +3,7 @@ package br.com.gradehorarios.gradehorarios.bootstrap.config;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import br.com.gradehorarios.gradehorarios.bootstrap.security.InstitutionAccessManager;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.SecurityFilter;
 
 @Configuration
@@ -23,6 +25,9 @@ import br.com.gradehorarios.gradehorarios.bootstrap.security.SecurityFilter;
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+
+    @Autowired
+    private InstitutionAccessManager institutionAccessManager;
 
     public SecurityConfig(SecurityFilter securityFilter) {
         this.securityFilter = securityFilter;
@@ -48,6 +53,7 @@ public class SecurityConfig {
                         "/*/api-docs/**",
                         "/swagger-ui.html",
                         "/swagger-ui/**").permitAll()
+                    .requestMatchers("/api/institutions/{institutionId}/**").access(institutionAccessManager)
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
@@ -60,7 +66,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public static AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
 }

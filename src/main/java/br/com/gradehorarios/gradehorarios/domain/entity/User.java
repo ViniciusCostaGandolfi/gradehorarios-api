@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Table(name = "users")
@@ -32,7 +31,6 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude="institutionRoles")
 @EqualsAndHashCode(of = "id")
 public class User implements UserDetails {
     @Id
@@ -46,7 +44,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private RoleName role;
     
-    private boolean active;
+    private boolean active = true;
 
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)    
@@ -54,8 +52,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.role.toString()));
-        
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -68,4 +65,23 @@ public class User implements UserDetails {
         return email;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; 
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.active;
+    }
 }

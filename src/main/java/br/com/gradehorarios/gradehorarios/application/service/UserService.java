@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import br.com.gradehorarios.gradehorarios.application.dto.LoginRequest;
 import br.com.gradehorarios.gradehorarios.application.dto.RegisterRequest;
 import br.com.gradehorarios.gradehorarios.application.dto.UpdateUserRequest;
@@ -46,6 +48,8 @@ public class UserService {
         User newUser = new User();
         newUser.setEmail(data.email());
         newUser.setPassword(passwordEncoder.encode(data.password()));
+        newUser.setActive(true);
+        newUser.setName(data.name());
         
         newUser.setRole(RoleName.ROLE_USER);
         
@@ -54,11 +58,16 @@ public class UserService {
         return tokenService.generateToken(newUser);
     }
 
-    public JwtResponse login(LoginRequest data) throws Exception {
-        var autenticationToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
-        var authentication = authenticationManager.authenticate(autenticationToken);
 
-        var user = (User) authentication.getPrincipal();
+    public JwtResponse login(LoginRequest data) throws JsonProcessingException {
+        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+
+        var auth = authenticationManager.authenticate(usernamePassword);
+
+
+        System.err.println(auth);
+        var user = (User) auth.getPrincipal();
+
         return tokenService.generateToken(user);
     }
 

@@ -16,7 +16,7 @@ public class SpringDocConfig {
         @Bean
         public OpenAPI customOpenAPI() {
                 return new OpenAPI()
-                        .info(new Info().title("RotaFood API").version("v1"))
+                        .info(new Info().title("GradeHorarios API").version("v1"))
                         .addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                         .components(new Components()
                                 .addSecuritySchemes("bearerAuth",
