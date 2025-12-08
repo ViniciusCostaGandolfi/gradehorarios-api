@@ -62,7 +62,7 @@ public class InstitutionService {
     }
 
     public List<Institution> findAllByUserId(Long userId) {
-        return repository.findAll();
+        return repository.findByUserId(userId);
     }
 
     public Institution findById(Long id) {

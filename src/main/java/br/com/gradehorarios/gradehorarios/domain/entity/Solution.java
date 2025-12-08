@@ -39,6 +39,12 @@ public class Solution {
     private String inputPath;
 
     @Column(length = 1024)
+    private String teacherOutputPath;
+
+    @Column(length = 1024)
+    private String classroomOutputPath;
+
+    @Column(length = 1024)
     private String outputPath;
 
     private Long durationMillis;

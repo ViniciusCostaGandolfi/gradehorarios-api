@@ -6,6 +6,8 @@ target/
 
 .env
 
+META-INF
+
 ### STS ###
 .apt_generated
 .classpath

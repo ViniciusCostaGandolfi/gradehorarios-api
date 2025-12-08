@@ -53,7 +53,7 @@ public class SecurityConfig {
                         "/*/api-docs/**",
                         "/swagger-ui.html",
                         "/swagger-ui/**").permitAll()
-                    .requestMatchers("/api/institutions/{institutionId}/**").access(institutionAccessManager)
+                    .requestMatchers("/*/institutions/{institutionId}/**").access(institutionAccessManager)
                     .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
