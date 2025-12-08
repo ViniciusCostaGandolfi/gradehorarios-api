@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import br.com.gradehorarios.gradehorarios.application.dto.LoginRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.RegisterRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.UpdateUserRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.UserResponseDTO;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.LoginRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.RegisterRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.UpdateUserRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.UserResponseDTO;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.TokenService;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtResponse;
 import br.com.gradehorarios.gradehorarios.domain.entity.RoleName;
@@ -31,10 +31,13 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
+
     @Autowired
     private TokenService tokenService;
+    
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -64,8 +67,6 @@ public class UserService {
 
         var auth = authenticationManager.authenticate(usernamePassword);
 
-
-        System.err.println(auth);
         var user = (User) auth.getPrincipal();
 
         return tokenService.generateToken(user);

@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.gradehorarios.gradehorarios.application.dto.CreateInstitutionRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.UpdateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.institution.CreateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.institution.UpdateInstitutionRequest;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
 import br.com.gradehorarios.gradehorarios.domain.entity.Institution;
 import br.com.gradehorarios.gradehorarios.domain.entity.RoleName;

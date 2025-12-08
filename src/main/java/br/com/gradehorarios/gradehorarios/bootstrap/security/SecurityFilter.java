@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
+import br.com.gradehorarios.gradehorarios.infra.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +22,10 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private UserRepository userRepository;
+
 
 
 
@@ -43,15 +48,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (tokenJwt != null) {
             try {
                 JwtUserDto userDto = tokenService.getUserFromToken(tokenJwt);
-
+                var user = userRepository.findById(userDto.id()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
                 var authorities = new ArrayList<SimpleGrantedAuthority>();
                 
-                authorities.add(new SimpleGrantedAuthority(userDto.role().toString()));
-                if (userDto.institutions() != null) {
-                    userDto.institutions().forEach(inst -> {
+                authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+                if (user.getInstitutionRoles() != null) {
+                    user.getInstitutionRoles().forEach(inst -> {
                         String authName = String.format("INSTITUTION_%d_%s", 
-                            inst.institutionId(), 
-                            inst.role()
+                            inst.getInstitution().getId(), 
+                            inst.getRole().toString().toUpperCase()
                         );
                         authorities.add(new SimpleGrantedAuthority(authName));
                     });

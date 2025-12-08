@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import br.com.gradehorarios.gradehorarios.application.dto.CreateInstitutionRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.InstitutionResponseDto;
-import br.com.gradehorarios.gradehorarios.application.dto.UpdateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.institution.CreateInstitutionRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.institution.InstitutionResponseDto;
+import br.com.gradehorarios.gradehorarios.application.dto.institution.UpdateInstitutionRequest;
 import br.com.gradehorarios.gradehorarios.application.service.InstitutionService;
+import br.com.gradehorarios.gradehorarios.application.service.storage.IStorageService;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
-import br.com.gradehorarios.gradehorarios.shared.service.storage.StorageService;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class InstitutionController {
     private InstitutionService service;
 
     @Autowired
-    private StorageService storageService;
+    private IStorageService storageService;
 
 
     @PostMapping
@@ -41,7 +41,7 @@ public class InstitutionController {
     public ResponseEntity<List<InstitutionResponseDto>> listAll(Authentication authentication) {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
         
-        return ResponseEntity.ok(service.findAll(user).stream()
+        return ResponseEntity.ok(service.findAllByUserId(user.id()).stream()
                 .map(inst -> new InstitutionResponseDto(inst, storageService))
                 .toList());
     }

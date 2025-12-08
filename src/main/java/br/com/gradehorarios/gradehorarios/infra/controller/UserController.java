@@ -7,10 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 
-import br.com.gradehorarios.gradehorarios.application.dto.LoginRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.RegisterRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.UpdateUserRequest;
-import br.com.gradehorarios.gradehorarios.application.dto.UserResponseDTO;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.LoginRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.RegisterRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.UpdateUserRequest;
+import br.com.gradehorarios.gradehorarios.application.dto.auth.UserResponseDTO;
 import br.com.gradehorarios.gradehorarios.application.service.UserService;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtResponse;
 import br.com.gradehorarios.gradehorarios.bootstrap.security.dto.JwtUserDto;
@@ -20,7 +20,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/auth/users")
+@RequestMapping("/api/auth")
 public class UserController {
 
     @Autowired
@@ -32,12 +32,12 @@ public class UserController {
         return ResponseEntity.ok(userService.login(data));
     }
 
-    @PostMapping("/register")
+    @PostMapping("/sigin")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest data) throws Exception {
         return ResponseEntity.ok(userService.register(data));
 
     }
-    @GetMapping
+    @GetMapping("/users")
     public ResponseEntity<List<UserResponseDTO>> listAll(Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -48,7 +48,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -59,7 +59,7 @@ public class UserController {
         return ResponseEntity.ok(userService.findById(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -71,7 +71,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/users/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UpdateUserRequest data, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
