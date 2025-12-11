@@ -6,14 +6,15 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.jsoup.Jsoup;
-import org.jsoup.helper.W3CDom;
+// import org.jsoup.helper.W3CDom;
 import org.jsoup.nodes.Document;
+import org.openpdf.pdf.ITextRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+// import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 import br.com.gradehorarios.gradehorarios.application.dto.solution.SolverResponseDto;
 
@@ -46,12 +47,21 @@ public class PdfReportService {
 
             Document doc = Jsoup.parse(htmlContent, "UTF-8");
             doc.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+            String xhtml = doc.html();
             
-            PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.toStream(os);
+            ITextRenderer renderer = new ITextRenderer();
+            
+            renderer.setDocumentFromString(xhtml);
+            
+            renderer.layout();
+            
+            renderer.createPDF(os);
+            
+            // PdfRendererBuilder builder = new PdfRendererBuilder();
+            // builder.toStream(os);
 
-            builder.withW3cDocument(new W3CDom().fromJsoup(doc), "/");
-            builder.run();
+            // builder.withW3cDocument(new W3CDom().fromJsoup(doc), "/");
+            // builder.run();
 
             return os.toByteArray();
 

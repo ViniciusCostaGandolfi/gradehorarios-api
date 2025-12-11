@@ -142,6 +142,13 @@ public class SolutionService {
         return solution;
     }
 
+    public Solution getSolutionByInstitutionIdAndSolutionId(Long institutionId, Long solutionId) {
+
+        var solution = this.solutionRepository.findByIdAndInstitutionId(solutionId, institutionId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Solução não encontrada para a instituição"));
+        return solution;
+    }
+
     public SolverResponseDto runSolverExternally(Solution solution) {
         try {
             HttpHeaders headers = new HttpHeaders();

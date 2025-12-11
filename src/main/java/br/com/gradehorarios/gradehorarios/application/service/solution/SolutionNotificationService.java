@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import br.com.gradehorarios.gradehorarios.application.service.email.IEmailService;
 import br.com.gradehorarios.gradehorarios.application.service.storage.StorageService;
 import br.com.gradehorarios.gradehorarios.domain.entity.Solution;
+import br.com.gradehorarios.gradehorarios.domain.entity.SolverStatus;
 
 @Service
 public class SolutionNotificationService {
@@ -28,7 +29,7 @@ public class SolutionNotificationService {
         String userName = solution.getUser().getName();
         String institutionName = solution.getInstitution().getName();
         
-        String solutionUrl = String.format("%s/app/institutions/%d/solutions/%d",
+        String solutionUrl = String.format("%s/admin/instituicoes/%d/solucoes/%d",
             frontendUrl,
             solution.getInstitution().getId(),
             solution.getId()
@@ -45,7 +46,11 @@ public class SolutionNotificationService {
         Map<String, Object> variables = new HashMap<>();
         variables.put("userName", userName);
         variables.put("institutionName", institutionName);
-        variables.put("status", solution.getSolverStatus());
+
+
+        var statusPresentation = this.determineStatusPresentation(solution.getSolverStatus());
+        variables.put("statusText", statusPresentation.text());
+        variables.put("statusClass", statusPresentation.cssClass());
         
         variables.put("teacherUrl", teacherFullUrl);
         variables.put("classroomUrl", classroomFullUrl);
@@ -60,4 +65,42 @@ public class SolutionNotificationService {
             variables
         );
     }
+
+    private StatusPresentation determineStatusPresentation(SolverStatus status) {
+        String text;
+        String cssClass;
+
+        if (status == null) {
+            text = "DESCONHECIDO";
+            cssClass = "status-warning";
+        } else {
+            switch (status) {
+                case FEASIBLE:
+                case OPTIMAL:
+                    text = "SUCESSO";
+                    cssClass = "status-success";
+                    break;
+                
+                case INFEASIBLE:
+                    text = "INVIÁVEL";
+                    cssClass = "status-error";
+                    break;
+                
+                case ERROR:
+                    text = "ERRO";
+                    cssClass = "status-error";
+                    break;
+                
+                default:
+                    text = status.name();
+                    cssClass = "status-warning";
+                    break;
+            }
+        }
+
+        return new StatusPresentation(text, cssClass);
+    }
+
+
+    private record StatusPresentation(String text, String cssClass) {}
 }

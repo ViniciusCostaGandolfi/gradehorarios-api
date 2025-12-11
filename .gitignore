@@ -8,6 +8,8 @@ target/
 
 META-INF
 
+mock_emails
+
 ### STS ###
 .apt_generated
 .classpath

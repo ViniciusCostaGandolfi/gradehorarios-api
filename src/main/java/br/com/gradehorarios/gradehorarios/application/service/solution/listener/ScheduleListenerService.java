@@ -4,6 +4,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import br.com.gradehorarios.gradehorarios.application.dto.solution.TimetableResultMessage;
 import br.com.gradehorarios.gradehorarios.application.service.solution.PdfReportService;
 import br.com.gradehorarios.gradehorarios.application.service.solution.SolutionNotificationService;
@@ -20,16 +22,19 @@ public class ScheduleListenerService implements IScheduleListenerService  {
     
 
     @Autowired
-    public IStorageService storageService;
+    private IStorageService storageService;
 
     @Autowired
-    public SolutionRepository solutionRepository;
+    private SolutionRepository solutionRepository;
 
     @Autowired
-    public SolutionNotificationService solutionNotificationService;
+    private SolutionNotificationService solutionNotificationService;
 
     @Autowired
-    public PdfReportService pdfReportService;
+    private PdfReportService pdfReportService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
 
     @RabbitListener(queues = MessagingConfig.RESULT_QUEUE_NAME)
@@ -37,44 +42,58 @@ public class ScheduleListenerService implements IScheduleListenerService  {
     public void recibeveScheduleResponse(TimetableResultMessage message) {
 
         var solution = this.solutionRepository.findById(message.solutionId()).orElseThrow(() -> new RuntimeException("Solucao nao encontrada"));
+
+        if (message.solution().isPresent()) {
+            var solutionDto = message.solution().get();
+            try {
+                byte[] jsonBytes = objectMapper.writeValueAsBytes(solutionDto);
+                var outputName = solution.getInputPath().replace("input.xlsx", "output.json");
+
+                InMemoryMultipartFile file = new InMemoryMultipartFile(
+                    "file",
+                    outputName,
+                    "application/json",
+                    jsonBytes
+                );
+                var outputPath = this.storageService.uploadFile(file, outputName);
+                solution.setOutputPath(outputPath);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar solucao recebida", e);
+            }
+            
+            
+
+            byte[] teacherPdfBytes = pdfReportService.generateTeacherReport(message.solution().get());
+            String teacherPdfName = solution.getInputPath().replace("input.xlsx", "_professores.pdf");
+            InMemoryMultipartFile teacherFile = new InMemoryMultipartFile(
+                "file",
+                teacherPdfName,
+                "application/pdf",
+                teacherPdfBytes
+            );
+            String teacherUrl = this.storageService.uploadFile(teacherFile, teacherPdfName);
+            solution.setTeacherOutputPath(teacherUrl);
+
+
+            byte[] classroomPdfBytes = pdfReportService.generateClassroomReport(message.solution().get());
+            String classroomPdfName = solution.getInputPath().replace("input.xlsx", "_turmas.pdf");
+            
+            InMemoryMultipartFile classroomFile = new InMemoryMultipartFile(
+                "file",
+                classroomPdfName,
+                "application/pdf",
+                classroomPdfBytes
+            );
+            String classroomUrl = this.storageService.uploadFile(classroomFile, classroomPdfName);
+            solution.setClassroomOutputPath(classroomUrl);
+        }
         
-        var outputName = solution.getInputPath().replace("input.xlsx", "output.json");
-
-        InMemoryMultipartFile file = new InMemoryMultipartFile(
-            "file",
-            outputName,
-            "application/json",
-            message.solution().toString().getBytes()
-        );
-        var outputPath = this.storageService.uploadFile(file, outputName);
-
-        byte[] teacherPdfBytes = pdfReportService.generateTeacherReport(message.solution());
-        String teacherPdfName = solution.getInputPath().replace("input.xlsx", "_professores.pdf");
-        InMemoryMultipartFile teacherFile = new InMemoryMultipartFile(
-            "file",
-            teacherPdfName,
-            "application/pdf",
-            teacherPdfBytes
-        );
-        String teacherUrl = this.storageService.uploadFile(teacherFile, teacherPdfName);
-
-        byte[] classroomPdfBytes = pdfReportService.generateClassroomReport(message.solution());
-        String classroomPdfName = solution.getInputPath().replace("input.xlsx", "_turmas.pdf");
         
-        InMemoryMultipartFile classroomFile = new InMemoryMultipartFile(
-            "file",
-            classroomPdfName,
-            "application/pdf",
-            classroomPdfBytes
-        );
-        String classroomUrl = this.storageService.uploadFile(classroomFile, classroomPdfName);
         
 
-        solution.setTeacherOutputPath(teacherUrl);
-        solution.setClassroomOutputPath(classroomUrl);
-        solution.setOutputPath(outputPath);
+
         solution.setSolverStatus(message.solverStatus());
-        solution.setDurationMillis(message.durationMilis());
+        solution.setDurationMillis(message.durationMillis());
         solution.setErrorMessage(message.errorMessage());
         solution.setWarningMessage(message.warningMessage());
         solution.setModelName(message.modelName());

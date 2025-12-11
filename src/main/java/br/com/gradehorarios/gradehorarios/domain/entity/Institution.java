@@ -3,6 +3,7 @@ package br.com.gradehorarios.gradehorarios.domain.entity;
 import java.util.Set;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,7 +35,7 @@ public class Institution {
 
     private boolean active;
 
-    @OneToMany(mappedBy = "institution")
+    @OneToMany(mappedBy = "institution", fetch = FetchType.EAGER)
     private Set<Solution> solutions;
 
 }
