@@ -1,0 +1,107 @@
+package br.com.gradehorarios.gradehorarios.timetable.infra.service;
+
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.gradehorarios.gradehorarios.shared.domain.service.FileStorageService;
+import br.com.gradehorarios.gradehorarios.shared.infra.config.MessagingConfig;
+import br.com.gradehorarios.gradehorarios.shared.infra.utils.InMemoryMultipartFile;
+import br.com.gradehorarios.gradehorarios.timetable.domain.repository.SolutionRepository;
+import br.com.gradehorarios.gradehorarios.timetable.domain.service.PdfReportService;
+import br.com.gradehorarios.gradehorarios.timetable.domain.service.ScheduleListenerService;
+import br.com.gradehorarios.gradehorarios.timetable.domain.service.SolutionNotificationService;
+import br.com.gradehorarios.gradehorarios.timetable.infra.dto.TimetableResultMessage;
+import jakarta.transaction.Transactional;
+
+
+
+@Service
+public class AmqpScheduleListenerService implements ScheduleListenerService  {
+    
+
+    @Autowired
+    private FileStorageService storageService;
+
+    @Autowired
+    private SolutionRepository solutionRepository;
+
+    @Autowired
+    private SolutionNotificationService solutionNotificationService;
+
+    @Autowired
+    private PdfReportService pdfReportService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+
+    @RabbitListener(queues = MessagingConfig.RESULT_QUEUE_NAME)
+    @Transactional
+    public void recibeveScheduleResponse(TimetableResultMessage message) {
+
+        var solution = this.solutionRepository.findById(message.solutionId()).orElseThrow(() -> new RuntimeException("Solucao nao encontrada"));
+
+        if (message.solution().isPresent()) {
+            var solutionDto = message.solution().get();
+            try {
+                byte[] jsonBytes = objectMapper.writeValueAsBytes(solutionDto);
+                var outputName = solution.getInputPath().replace("input.xlsx", "output.json");
+
+                InMemoryMultipartFile file = new InMemoryMultipartFile(
+                    "file",
+                    outputName,
+                    "application/json",
+                    jsonBytes
+                );
+                var outputPath = this.storageService.uploadFile(file, outputName);
+                solution.setOutputPath(outputPath);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao processar solucao recebida", e);
+            }
+            
+            
+
+            byte[] teacherPdfBytes = pdfReportService.generateTeacherReport(message.solution().get());
+            String teacherPdfName = solution.getInputPath().replace("input.xlsx", "_professores.pdf");
+            InMemoryMultipartFile teacherFile = new InMemoryMultipartFile(
+                "file",
+                teacherPdfName,
+                "application/pdf",
+                teacherPdfBytes
+            );
+            String teacherUrl = this.storageService.uploadFile(teacherFile, teacherPdfName);
+            solution.setTeacherOutputPath(teacherUrl);
+
+
+            byte[] classroomPdfBytes = pdfReportService.generateClassroomReport(message.solution().get());
+            String classroomPdfName = solution.getInputPath().replace("input.xlsx", "_turmas.pdf");
+            
+            InMemoryMultipartFile classroomFile = new InMemoryMultipartFile(
+                "file",
+                classroomPdfName,
+                "application/pdf",
+                classroomPdfBytes
+            );
+            String classroomUrl = this.storageService.uploadFile(classroomFile, classroomPdfName);
+            solution.setClassroomOutputPath(classroomUrl);
+        }
+        
+        
+        
+
+
+        solution.setSolverStatus(message.solverStatus());
+        solution.setDurationMillis(message.durationMillis());
+        solution.setErrorMessage(message.errorMessage());
+        solution.setWarningMessage(message.warningMessage());
+        solution.setModelName(message.modelName());
+        
+        this.solutionRepository.save(solution);
+
+        this.solutionNotificationService.notifySolutionProcessed(solution);
+    }
+
+}
