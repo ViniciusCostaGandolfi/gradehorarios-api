@@ -5,6 +5,7 @@ import br.com.gradehorarios.gradehorarios.auth.domain.repository.UserRepository;
 import br.com.gradehorarios.gradehorarios.institution.domain.model.Institution;
 import br.com.gradehorarios.gradehorarios.institution.domain.repository.InstitutionRepository;
 import br.com.gradehorarios.gradehorarios.shared.domain.service.FileStorageService;
+import br.com.gradehorarios.gradehorarios.shared.infra.utils.StringUtils;
 import br.com.gradehorarios.gradehorarios.timetable.domain.model.Solution;
 import br.com.gradehorarios.gradehorarios.timetable.domain.model.SolverStatus;
 import br.com.gradehorarios.gradehorarios.timetable.domain.policy.SolutionCreationPolicy;
@@ -32,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 public class SolutionService {
@@ -76,10 +76,14 @@ public class SolutionService {
 
         this.solutionCreationPolicy.checkQuota(user.getId());
 
-        String uuid = UUID.randomUUID().toString();
-        String extension = file.getOriginalFilename() != null ? file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".")) : ".xlsx";
-        String uniqueFileName = String.format("%s_input%s", uuid, extension);
-        String objectName = String.format("instituicao_%d/solucao/%s", institutionId, uniqueFileName);
+        String extension = StringUtils.extractExtension(file.getOriginalFilename());
+        String uniqueFileName = StringUtils.generateRandomName();
+        String objectName = String.format(
+            "instituicao_%d/solucao/%s/%s/%s",
+            institutionId,
+            uniqueFileName,
+            "_input",
+            extension);
 
         String inputPath = storageService.uploadFile(file, objectName);
 

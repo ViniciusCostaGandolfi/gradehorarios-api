@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.gradehorarios.gradehorarios.shared.domain.service.FileStorageService;
 import br.com.gradehorarios.gradehorarios.shared.infra.config.MessagingConfig;
 import br.com.gradehorarios.gradehorarios.shared.infra.utils.InMemoryMultipartFile;
+import br.com.gradehorarios.gradehorarios.shared.infra.utils.StringUtils;
 import br.com.gradehorarios.gradehorarios.timetable.domain.repository.SolutionRepository;
 import br.com.gradehorarios.gradehorarios.timetable.domain.service.PdfReportService;
 import br.com.gradehorarios.gradehorarios.timetable.domain.service.ScheduleListenerService;
@@ -48,7 +49,9 @@ public class AmqpScheduleListenerService implements ScheduleListenerService  {
             var solutionDto = message.solution().get();
             try {
                 byte[] jsonBytes = objectMapper.writeValueAsBytes(solutionDto);
-                var outputName = solution.getInputPath().replace("input.xlsx", "output.json");
+
+                var extension = StringUtils.extractExtension(solution.getInputPath());
+                var outputName = solution.getInputPath().replace("_input." + extension, "output.json");
 
                 InMemoryMultipartFile file = new InMemoryMultipartFile(
                     "file",
@@ -65,7 +68,9 @@ public class AmqpScheduleListenerService implements ScheduleListenerService  {
             
 
             byte[] teacherPdfBytes = pdfReportService.generateTeacherReport(message.solution().get());
-            String teacherPdfName = solution.getInputPath().replace("input.xlsx", "_professores.pdf");
+
+            var extension = StringUtils.extractExtension(solution.getInputPath());
+            var teacherPdfName = solution.getInputPath().replace("_input." + extension, "_professores.pdf");
             InMemoryMultipartFile teacherFile = new InMemoryMultipartFile(
                 "file",
                 teacherPdfName,
@@ -77,7 +82,7 @@ public class AmqpScheduleListenerService implements ScheduleListenerService  {
 
 
             byte[] classroomPdfBytes = pdfReportService.generateClassroomReport(message.solution().get());
-            String classroomPdfName = solution.getInputPath().replace("input.xlsx", "_turmas.pdf");
+            var classroomPdfName = solution.getInputPath().replace("_input." + extension, "_turmas.pdf");
             
             InMemoryMultipartFile classroomFile = new InMemoryMultipartFile(
                 "file",

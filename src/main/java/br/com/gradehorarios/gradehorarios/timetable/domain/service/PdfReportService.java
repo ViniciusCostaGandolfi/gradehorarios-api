@@ -18,6 +18,7 @@ import br.com.gradehorarios.gradehorarios.timetable.infra.dto.SolverResponseDto;
 
 @Service
 public class PdfReportService {
+    
     @Autowired
     private SpringTemplateEngine templateEngine;
 
@@ -78,7 +79,7 @@ public class PdfReportService {
                     if (dayList != null && dayList.size() > max) {
                         max = dayList.size();
                     }
-                } catch (Exception e) {
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException e) {
                 }
             }
         }

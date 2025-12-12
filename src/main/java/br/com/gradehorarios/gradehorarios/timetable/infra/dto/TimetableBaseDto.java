@@ -3,9 +3,13 @@ package br.com.gradehorarios.gradehorarios.timetable.infra.dto;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TimetableBaseDto {
     private String name;
     private List<String> monday = new ArrayList<>();
