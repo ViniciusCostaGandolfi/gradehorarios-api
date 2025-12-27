@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +39,7 @@ public class PdfReportServiceTest {
 
     private SolverResponseDto solverResponseDto;
 
-    @BeforeAll
+    @BeforeEach
     @SuppressWarnings("unused")
     void setUp() {
         var baseClasses = List.of("Aula 1", "Aula 2", "Aula 3", "Aula 4", "Aula 5");
@@ -80,7 +80,7 @@ public class PdfReportServiceTest {
         assertTrue(pdfBytes.length > 0);
 
 
-        verify(templateEngine).process(eq("pfd/timetable_report"), contextCaptor.capture());
+        verify(templateEngine).process(eq("pdf/timetable_report"), contextCaptor.capture());
 
         var context = contextCaptor.getValue();
 
@@ -91,5 +91,32 @@ public class PdfReportServiceTest {
         
         assertEquals(5, context.getVariable("maxClasses"));
     }
+
+
+    @Test
+    void testGenerateTeacherReport() {
+        String mockHtml = "<html><body><h1>Relatorio Teacher</h1><p>Teste</p></body></html>";
+
+        when(templateEngine.process(eq("pdf/timetable_report"), any(Context.class)))
+            .thenReturn(mockHtml);
+
+        byte[] pdfBytes = service.generateClassroomReport(solverResponseDto);
+
+        assertNotNull(pdfBytes);
+        assertTrue(pdfBytes.length > 0);
+
+
+        verify(templateEngine).process(eq("pdf/timetable_report"), contextCaptor.capture());
+
+        var context = contextCaptor.getValue();
+
+        assertEquals("Sala", context.getVariable("titlePrefix"));
+
+        List<?> items = (List<?>) context.getVariable("items");
+        assertEquals(10, items.size());
+        
+        assertEquals(5, context.getVariable("maxClasses"));
+    }
+
 
 }

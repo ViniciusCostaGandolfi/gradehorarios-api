@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.gradehorarios.gradehorarios.shared.domain.service.FileStorageService;
@@ -41,6 +42,7 @@ public class AmqpScheduleListenerService implements ScheduleListenerService  {
 
     @RabbitListener(queues = MessagingConfig.RESULT_QUEUE_NAME)
     @Transactional
+    @Override
     public void recibeveScheduleResponse(TimetableResultMessage message) {
 
         var solution = this.solutionRepository.findById(message.solutionId()).orElseThrow(() -> new RuntimeException("Solucao nao encontrada"));
@@ -61,7 +63,7 @@ public class AmqpScheduleListenerService implements ScheduleListenerService  {
                 );
                 var outputPath = this.storageService.uploadFile(file, outputName);
                 solution.setOutputPath(outputPath);
-            } catch (Exception e) {
+            } catch (JsonProcessingException e) {
                 throw new RuntimeException("Erro ao processar solucao recebida", e);
             }
             
