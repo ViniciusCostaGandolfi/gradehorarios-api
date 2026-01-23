@@ -1,9 +1,12 @@
 package br.com.gradehorarios.gradehorarios.auth.application.service;
 
 
+import java.util.Collections;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,7 +26,13 @@ import br.com.gradehorarios.gradehorarios.auth.infra.security.TokenService;
 import br.com.gradehorarios.gradehorarios.auth.infra.security.dto.JwtResponse;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +49,9 @@ public class UserService {
     
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Value("${google.api.client}") 
+    private String googleClientId;
 
 
     @Transactional
@@ -111,5 +123,38 @@ public class UserService {
 
         return new UserResponseDTO(user);
     }
+
+
+
+    @Transactional
+    public JwtResponse loginWithGoogle(String googleToken) throws Exception {
+        
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                .setAudience(Collections.singletonList(this.googleClientId))
+                .build();
+        GoogleIdToken idToken = verifier.verify(googleToken);
+        if (idToken == null) {
+            throw new IllegalArgumentException("Token do Google inválido.");
+        }
+
+        GoogleIdToken.Payload payload = idToken.getPayload();
+        String email = payload.getEmail();
+        String name = (String) payload.get("name");
+
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setName(name);
+            newUser.setPassword(passwordEncoder.encode(UUID.randomUUID().toString())); 
+            newUser.setRole(RoleName.ROLE_USER);
+            newUser.setActive(true);
+            return userRepository.save(newUser);
+        });
+
+        return tokenService.generateToken(user);
+    }
+
+
+    
 
 }

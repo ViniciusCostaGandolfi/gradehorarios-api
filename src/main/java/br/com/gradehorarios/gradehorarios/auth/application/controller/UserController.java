@@ -19,6 +19,8 @@ import br.com.gradehorarios.gradehorarios.auth.infra.security.dto.JwtUserDto;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 
+import br.com.gradehorarios.gradehorarios.auth.application.dto.GoogleLoginRequestDto;
+
 @RestController
 @RequestMapping("/api/auth")
 public class UserController {
@@ -84,5 +86,11 @@ public class UserController {
         }
 
         return ResponseEntity.ok(userService.updateUser(id, data));
+    }
+
+
+    @PostMapping("/google")
+    public ResponseEntity<JwtResponse> googleLogin(@RequestBody GoogleLoginRequestDto request) throws Exception {
+        return ResponseEntity.ok(userService.loginWithGoogle(request.token()));
     }
 }
