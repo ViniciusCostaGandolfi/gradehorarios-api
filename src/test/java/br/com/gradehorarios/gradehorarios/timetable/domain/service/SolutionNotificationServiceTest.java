@@ -18,12 +18,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import br.com.gradehorarios.gradehorarios.auth.domain.model.User;
-import br.com.gradehorarios.gradehorarios.institution.domain.model.Institution;
-import br.com.gradehorarios.gradehorarios.shared.domain.service.EmailService;
-import br.com.gradehorarios.gradehorarios.shared.domain.service.FileStorageService;
-import br.com.gradehorarios.gradehorarios.timetable.domain.model.Solution;
-import br.com.gradehorarios.gradehorarios.timetable.domain.model.SolverStatus;
+import br.com.gradehorarios.api.auth.domain.model.User;
+import br.com.gradehorarios.api.institution.domain.model.Institution;
+import br.com.gradehorarios.api.shared.domain.service.EmailService;
+import br.com.gradehorarios.api.shared.domain.service.FileStorageService;
+import br.com.gradehorarios.api.timetable.domain.model.Solution;
+import br.com.gradehorarios.api.timetable.domain.model.SolverStatus;
+import br.com.gradehorarios.api.timetable.domain.service.SolutionNotificationService;
 
 @ExtendWith(MockitoExtension.class)
 public class SolutionNotificationServiceTest {

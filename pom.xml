@@ -10,7 +10,7 @@
 		<relativePath />
 	</parent>
 	<groupId>br.com.gradehorarios</groupId>
-	<artifactId>gradehorarios</artifactId>
+	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>GradeHorarios</name>
 	<description>Demo project for Spring Boot</description>

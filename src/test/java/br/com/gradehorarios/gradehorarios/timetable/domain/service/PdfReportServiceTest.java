@@ -21,8 +21,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import br.com.gradehorarios.gradehorarios.timetable.infra.dto.SolverResponseDto;
-import br.com.gradehorarios.gradehorarios.timetable.infra.dto.TimetableBaseDto;
+import br.com.gradehorarios.api.timetable.domain.service.PdfReportService;
+import br.com.gradehorarios.api.timetable.infra.dto.SolverResponseDto;
+import br.com.gradehorarios.api.timetable.infra.dto.TimetableBaseDto;
 
 
 @ExtendWith(MockitoExtension.class)
