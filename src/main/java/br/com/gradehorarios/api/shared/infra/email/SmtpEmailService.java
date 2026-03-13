@@ -5,7 +5,6 @@ import org.jsoup.nodes.Document;
 import org.openpdf.pdf.ITextRenderer; // Importação da OpenPDF 3.0
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
@@ -29,20 +28,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import org.openpdf.text.DocumentException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class SmtpEmailService implements EmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(SmtpEmailService.class);
 
-    @Autowired
-    private JavaMailSender mailSender;
+    private final JavaMailSender mailSender;
 
-    @Autowired
-    private SpringTemplateEngine templateEngine;
+    private final SpringTemplateEngine templateEngine;
 
-    @Autowired
-    private Environment env;
+    private final Environment env;
 
     @Value("${spring.mail.username}")
     private String fromEmail;

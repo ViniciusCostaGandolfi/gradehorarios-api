@@ -1,8 +1,8 @@
 package br.com.gradehorarios.api.timetable.infra.service;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import br.com.gradehorarios.api.shared.infra.config.MessagingConfig;
 import br.com.gradehorarios.api.timetable.domain.service.ScheduleProducerService;
@@ -10,10 +10,10 @@ import br.com.gradehorarios.api.timetable.infra.dto.TimetableRequestMessage;
 
 
 @Service
+@RequiredArgsConstructor
 public class AmqpScheduleProducerService implements ScheduleProducerService {
 
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public void sendScheduleRequest(TimetableRequestMessage message) {

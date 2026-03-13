@@ -7,19 +7,22 @@ import br.com.gradehorarios.api.shared.domain.service.FileStorageService;
 import br.com.gradehorarios.api.timetable.domain.model.Solution;
 import br.com.gradehorarios.api.timetable.domain.model.SolverStatus;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Response object containing solution details")
 public record SolutionDto(
-    Long id,
-    Instant createdAt,
-    String inputPath,
-    String outputPath,
-    String classroomOutputPath,
-    String teacherOutputPath,
-    SolverStatus solverStatus,
-    Long durationMillis,
-    String errorMessage,
-    String warningMessage,
-    String modelName,
-    Long institutionId
+    @Schema(description = "Solution's unique ID", example = "10") Long id,
+    @Schema(description = "Creation timestamp") Instant createdAt,
+    @Schema(description = "Path/URL to the input file") String inputPath,
+    @Schema(description = "Path/URL to the output file") String outputPath,
+    @Schema(description = "Path/URL to the classroom timetable output file") String classroomOutputPath,
+    @Schema(description = "Path/URL to the teacher timetable output file") String teacherOutputPath,
+    @Schema(description = "Current solver status", example = "PENDING") SolverStatus solverStatus,
+    @Schema(description = "Duration of the generation in milliseconds", example = "15000") Long durationMillis,
+    @Schema(description = "Error message if failed") String errorMessage,
+    @Schema(description = "Warning message if any") String warningMessage,
+    @Schema(description = "Name of the uploaded model file") String modelName,
+    @Schema(description = "ID of the institution", example = "1") Long institutionId
 ) {
 
     public SolutionDto(Solution solution) {

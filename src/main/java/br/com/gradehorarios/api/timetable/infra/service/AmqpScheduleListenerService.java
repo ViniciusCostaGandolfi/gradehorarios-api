@@ -1,8 +1,8 @@
 package br.com.gradehorarios.api.timetable.infra.service;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,23 +21,19 @@ import jakarta.transaction.Transactional;
 
 
 @Service
+@RequiredArgsConstructor
 public class AmqpScheduleListenerService implements ScheduleListenerService  {
     
 
-    @Autowired
-    private FileStorageService storageService;
+    private final FileStorageService storageService;
 
-    @Autowired
-    private SolutionRepository solutionRepository;
+    private final SolutionRepository solutionRepository;
 
-    @Autowired
-    private SolutionNotificationService solutionNotificationService;
+    private final SolutionNotificationService solutionNotificationService;
 
-    @Autowired
-    private PdfReportService pdfReportService;
+    private final PdfReportService pdfReportService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
 
     @RabbitListener(queues = MessagingConfig.RESULT_QUEUE_NAME)

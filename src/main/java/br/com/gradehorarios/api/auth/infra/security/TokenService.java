@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -23,13 +23,13 @@ import br.com.gradehorarios.api.auth.infra.security.dto.JwtUserDto;
 
 
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
     @Value("${api.security.token.secret}")
     private String secret;
 
-    @Autowired
-    ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
 
     public JwtResponse generateToken(User user) throws JsonProcessingException {

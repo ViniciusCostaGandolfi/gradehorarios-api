@@ -1,4 +1,4 @@
-package br.com.gradehorarios.gradehorarios;
+package br.com.gradehorarios.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

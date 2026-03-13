@@ -2,7 +2,6 @@ package br.com.gradehorarios.api.shared.infra.storage;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,10 +22,8 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class S3FileStorageService implements FileStorageService{
 
-    @Autowired
-    private S3Client s3Client;
-    @Autowired
-    private S3Presigner s3Presigner;
+    private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
 
     @Value("${spring.storage.s3.bucket-name}")
     private String bucketName;

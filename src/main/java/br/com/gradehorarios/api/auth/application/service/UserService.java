@@ -1,12 +1,4 @@
 package br.com.gradehorarios.api.auth.application.service;
-
-
-import java.util.Collections;
-
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,10 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
+import br.com.gradehorarios.api.auth.domain.service.OAuthProviderService;
+import br.com.gradehorarios.api.auth.domain.service.OAuthUserInfo;
 
 import br.com.gradehorarios.api.auth.application.dto.LoginRequest;
 import br.com.gradehorarios.api.auth.application.dto.RegisterRequest;
@@ -34,25 +24,32 @@ import br.com.gradehorarios.api.auth.domain.repository.UserRepository;
 import br.com.gradehorarios.api.auth.infra.security.TokenService;
 import br.com.gradehorarios.api.auth.infra.security.dto.JwtResponse;
 
+import java.util.Map;
+import java.util.function.Function;
+
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
+    private final AuthenticationManager authenticationManager;
+    private final Map<String, OAuthProviderService> oauthProviders;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private TokenService tokenService;
-    
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Value("${google.api.client}") 
-    private String googleClientId;
-
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            TokenService tokenService,
+            AuthenticationManager authenticationManager,
+            List<OAuthProviderService> providersList
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenService = tokenService;
+        this.authenticationManager = authenticationManager;
+        this.oauthProviders = providersList.stream()
+                .collect(Collectors.toMap(OAuthProviderService::getProviderName, Function.identity()));
+    }
 
     @Transactional
     public JwtResponse register(RegisterRequest data) throws Exception {
@@ -127,24 +124,19 @@ public class UserService {
 
 
     @Transactional
-    public JwtResponse loginWithGoogle(String googleToken) throws Exception {
+    public JwtResponse oauthLogin(String providerName, String providerToken) throws Exception {
+        OAuthProviderService providerService = oauthProviders.get(providerName.toLowerCase());
         
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                .setAudience(Collections.singletonList(this.googleClientId))
-                .build();
-        GoogleIdToken idToken = verifier.verify(googleToken);
-        if (idToken == null) {
-            throw new IllegalArgumentException("Token do Google inválido.");
+        if (providerService == null) {
+            throw new IllegalArgumentException("Provedor OAuth não suportado: " + providerName);
         }
 
-        GoogleIdToken.Payload payload = idToken.getPayload();
-        String email = payload.getEmail();
-        String name = (String) payload.get("name");
+        OAuthUserInfo userInfo = providerService.getUserInfo(providerToken);
 
-        User user = userRepository.findByEmail(email).orElseGet(() -> {
+        User user = userRepository.findByEmail(userInfo.email()).orElseGet(() -> {
             User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setName(name);
+            newUser.setEmail(userInfo.email());
+            newUser.setName(userInfo.name());
             newUser.setPassword(passwordEncoder.encode(UUID.randomUUID().toString())); 
             newUser.setRole(RoleName.ROLE_USER);
             newUser.setActive(true);

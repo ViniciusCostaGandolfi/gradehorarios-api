@@ -1,6 +1,5 @@
 package br.com.gradehorarios.api.timetable.application.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,32 +38,25 @@ import org.springframework.web.client.RestClientException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Service
+@RequiredArgsConstructor
 public class SolutionService {
 
     
-    @Autowired
-    private FileStorageService storageService;
+    private final FileStorageService storageService;
     
-    @Autowired
-    private AmqpScheduleProducerService messagingService;
+    private final AmqpScheduleProducerService messagingService;
     
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
     
-    @Autowired
-    private InstitutionRepository institutionRepository;
+    private final InstitutionRepository institutionRepository;
     
-    @Autowired
-    private SolutionRepository solutionRepository;
+    private final SolutionRepository solutionRepository;
 
-    @Autowired
-    private SolutionCreationPolicy solutionCreationPolicy;
+    private final SolutionCreationPolicy solutionCreationPolicy;
     
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
     
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Value("${ms-solver.url}")
     private String msSolverUrl;

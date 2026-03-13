@@ -1,9 +1,7 @@
 package br.com.gradehorarios.api.auth.infra.config;
 
-
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,48 +23,48 @@ import br.com.gradehorarios.api.auth.infra.security.SecurityFilter;
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+    private final InstitutionAccessManager institutionAccessManager;
 
-    @Autowired
-    private InstitutionAccessManager institutionAccessManager;
-
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(SecurityFilter securityFilter, InstitutionAccessManager institutionAccessManager) {
         this.securityFilter = securityFilter;
+        this.institutionAccessManager = institutionAccessManager;
     }
 
     @Bean
-    public SecurityFilterChain filtrosSeguranca(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(request -> {
-                CorsConfiguration corsConfig = new CorsConfiguration();
-                corsConfig.addAllowedOriginPattern("*");
-                corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
-                corsConfig.setExposedHeaders(List.of("Authorization"));
-                corsConfig.setAllowCredentials(true);
-                return corsConfig;
-            }))
+                    CorsConfiguration corsConfig = new CorsConfiguration();
+                    corsConfig.addAllowedOriginPattern("*");
+                    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+                    corsConfig.setExposedHeaders(List.of("Authorization"));
+                    corsConfig.setAllowCredentials(true);
+                    return corsConfig;
+                }))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(
-                        "/*/auth/**",
-                        "/*/api-docs/**",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**").permitAll()
-                    .requestMatchers("/*/institutions/{institutionId}/**").access(institutionAccessManager)
-                    .anyRequest().authenticated()
-                )
+                        .requestMatchers(
+                                "/*/auth/**",
+                                "/*/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**")
+                        .permitAll()
+                        .requestMatchers("/*/institutions/{institutionId}/**").access(institutionAccessManager)
+                        .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
     @Bean
-    public PasswordEncoder encript(){
+    public PasswordEncoder encript() {
         return new BCryptPasswordEncoder();
     }
 
     @Bean
-    public static AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public static AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 

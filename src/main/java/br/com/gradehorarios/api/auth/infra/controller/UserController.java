@@ -1,13 +1,14 @@
-package br.com.gradehorarios.api.auth.application.controller;
+package br.com.gradehorarios.api.auth.infra.controller;
 
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
-import br.com.gradehorarios.api.auth.application.dto.GoogleLoginRequestDto;
 import br.com.gradehorarios.api.auth.application.dto.LoginRequest;
+import br.com.gradehorarios.api.auth.application.dto.OAuthLoginRequestDto;
 import br.com.gradehorarios.api.auth.application.dto.RegisterRequest;
 import br.com.gradehorarios.api.auth.application.dto.UpdateUserRequest;
 import br.com.gradehorarios.api.auth.application.dto.UserResponseDTO;
@@ -20,26 +21,31 @@ import org.springframework.security.core.Authentication;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "User API", description = "Endpoints for user authentication and management")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
 
     @PostMapping("/login")
+    @Operation(summary = "Login user", description = "Authenticates a user and returns a JWT token")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest data) throws Exception {
         return ResponseEntity.ok(userService.login(data));
     }
 
     @PostMapping("/sigin")
+    @Operation(summary = "Register user", description = "Registers a new user in the system")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest data) throws Exception {
         return ResponseEntity.ok(userService.register(data));
 
     }
     @GetMapping("/users")
+    @Operation(summary = "List all users", description = "Returns a list of all registered users (Admin only)")
     public ResponseEntity<List<UserResponseDTO>> listAll(Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -51,6 +57,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+    @Operation(summary = "Get user by ID", description = "Returns user details by ID")
     public ResponseEntity<UserResponseDTO> getById(@PathVariable Long id, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -62,6 +69,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
+    @Operation(summary = "Delete user", description = "Deletes a user by ID")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -74,6 +82,7 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
+    @Operation(summary = "Update user", description = "Updates user details by ID")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @RequestBody UpdateUserRequest data, Authentication authentication) throws Exception {
         JwtUserDto user = (JwtUserDto) authentication.getPrincipal();
 
@@ -88,9 +97,9 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, data));
     }
 
-
-    @PostMapping("/google")
-    public ResponseEntity<JwtResponse> googleLogin(@RequestBody GoogleLoginRequestDto request) throws Exception {
-        return ResponseEntity.ok(userService.loginWithGoogle(request.token()));
+    @PostMapping("/oauth")
+    @Operation(summary = "OAuth Login", description = "Authenticates a user using an external OAuth token")
+    public ResponseEntity<JwtResponse> oauthLogin(@RequestBody OAuthLoginRequestDto request) throws Exception {
+        return ResponseEntity.ok(userService.oauthLogin(request.provider(), request.token()));
     }
 }

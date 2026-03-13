@@ -3,12 +3,12 @@ package br.com.gradehorarios.api.auth.infra.security;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import lombok.RequiredArgsConstructor;
 
 import br.com.gradehorarios.api.auth.domain.repository.UserRepository;
 import br.com.gradehorarios.api.auth.infra.security.dto.JwtUserDto;
@@ -18,13 +18,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
+@RequiredArgsConstructor
 public class SecurityFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
 
 

@@ -8,8 +8,8 @@ import java.util.List;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openpdf.pdf.ITextRenderer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -17,10 +17,10 @@ import br.com.gradehorarios.api.timetable.infra.dto.SolverResponseDto;
 
 
 @Service
+@RequiredArgsConstructor
 public class PdfReportService {
     
-    @Autowired
-    private SpringTemplateEngine templateEngine;
+    private final SpringTemplateEngine templateEngine;
 
     public byte[] generateTeacherReport(SolverResponseDto sollutionDto) {
 
